@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Honors Upgrade Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --panel: #0f1628;
+    --border: #1e2d50;
+    --accent: #00c8ff;
+    --accent2: #ff6b35;
+    --gold: #ffd166;
+    --green: #06d6a0;
+    --text: #c8d8f0;
+    --muted: #4a6080;
+    --camp-color: #00c8ff;
+    --fort-color: #ff6b35;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(0,200,255,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(255,107,53,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  header h1 {
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--accent), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    margin-top: 0.4rem;
+    font-weight: 300;
+  }
+
+  .grid-layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .grid-layout { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.6;
+  }
+
+  .panel h2 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .panel h2::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: var(--accent);
+    display: block;
+  }
+
+  .field-group {
+    margin-bottom: 1.4rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .level-inputs {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .level-inputs input {
+    flex: 1;
+    background: rgba(0,200,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.1rem;
+    text-align: center;
+    padding: 0.6rem 0.3rem;
+    transition: border-color 0.2s, background 0.2s;
+    width: 100%;
+    -moz-appearance: textfield;
+  }
+
+  .level-inputs input::-webkit-outer-spin-button,
+  .level-inputs input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .level-inputs input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: rgba(0,200,255,0.1);
+  }
+
+  .level-tag {
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  input[type="number"].single,
+  input[type="text"].single {
+    width: 100%;
+    background: rgba(0,200,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+    padding: 0.65rem 0.9rem;
+    transition: border-color 0.2s, background 0.2s;
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"].single::-webkit-outer-spin-button,
+  input[type="number"].single::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  input[type="number"].single:focus,
+  input[type="text"].single:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: rgba(0,200,255,0.1);
+  }
+
+  .fortress-count-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .fortress-count-row label { margin: 0; white-space: nowrap; flex: 1; }
+
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .stepper button {
+    width: 28px;
+    height: 28px;
+    background: var(--border);
+    border: 1px solid var(--muted);
+    border-radius: 4px;
+    color: var(--text);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .stepper button:hover { background: var(--accent); border-color: var(--accent); color: #000; }
+
+  .stepper span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+    color: var(--accent);
+  }
+
+  .btn-calc {
+    width: 100%;
+    padding: 0.9rem;
+    background: linear-gradient(135deg, #006080, #004060);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-calc:hover {
+    background: linear-gradient(135deg, #0090c0, #005580);
+    box-shadow: 0 0 24px rgba(0,200,255,0.3);
+    transform: translateY(-1px);
+  }
+
+  .btn-calc:active { transform: translateY(0); }
+
+  /* Summary cards */
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .stat-card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+  }
+
+  .stat-card .stat-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-card .stat-value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--gold);
+  }
+
+  .stat-card.accent .stat-value { color: var(--accent); }
+  .stat-card.green .stat-value { color: var(--green); }
+  .stat-card.orange .stat-value { color: var(--accent2); }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  thead th {
+    background: rgba(0,200,255,0.07);
+    color: var(--muted);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.7rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  thead th:first-child { text-align: left; }
+  thead th.center { text-align: center; }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(30,45,80,0.5);
+    transition: background 0.1s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(0,200,255,0.04); }
+
+  tbody td {
+    padding: 0.55rem 0.8rem;
+    text-align: right;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  tbody td:first-child { text-align: left; }
+  tbody td.center { text-align: center; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .badge-camp { background: rgba(0,200,255,0.15); color: var(--camp-color); border: 1px solid rgba(0,200,255,0.3); }
+  .badge-fort { background: rgba(255,107,53,0.15); color: var(--fort-color); border: 1px solid rgba(255,107,53,0.3); }
+
+  .eff-high { color: var(--green); }
+  .eff-mid  { color: var(--gold); }
+  .eff-low  { color: var(--muted); }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+  }
+
+  .empty-state .big-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+  .empty-state p { font-size: 0.85rem; letter-spacing: 0.05em; }
+
+  .error-msg {
+    background: rgba(255,50,50,0.1);
+    border: 1px solid rgba(255,50,50,0.3);
+    border-radius: 6px;
+    padding: 0.7rem 1rem;
+    color: #ff6b6b;
+    font-size: 0.82rem;
+    margin-top: 0.8rem;
+    display: none;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 1.2rem 0;
+  }
+
+  .levels-mini {
+    display: inline-flex;
+    gap: 3px;
+  }
+
+  .level-chip {
+    background: rgba(0,200,255,0.1);
+    border: 1px solid rgba(0,200,255,0.2);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: 0.7rem;
+    color: var(--accent);
+  }
+
+  .level-chip.fort {
+    background: rgba(255,107,53,0.1);
+    border-color: rgba(255,107,53,0.2);
+    color: var(--fort-color);
+  }
+
+  .scroll-hint {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    letter-spacing: 0.08em;
+  }
+
+  .fade-in { animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>⚔ Honors Upgrade Calculator</h1>
+    <p>Maximize honors per material — greedy efficiency optimizer</p>
+  </header>
+
+  <div class="grid-layout">
+    <!-- INPUT PANEL -->
+    <div class="panel">
+      <h2>Configuration</h2>
+
+      <div class="field-group">
+        <label>Workshop / Camp Levels (4 camps)</label>
+        <div class="level-inputs" id="camp-inputs">
+          <div style="flex:1">
+            <input type="number" class="camp-lvl" min="0" max="20" value="10" placeholder="0">
+            <div class="level-tag">Camp 1</div>
+          </div>
+          <div style="flex:1">
+            <input type="number" class="camp-lvl" min="0" max="20" value="10" placeholder="0">
+            <div class="level-tag">Camp 2</div>
+          </div>
+          <div style="flex:1">
+            <input type="number" class="camp-lvl" min="0" max="20" value="10" placeholder="0">
+            <div class="level-tag">Camp 3</div>
+          </div>
+          <div style="flex:1">
+            <input type="number" class="camp-lvl" min="0" max="20" value="10" placeholder="0">
+            <div class="level-tag">Camp 4</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fortress-count-row">
+        <label>Number of Fortresses</label>
+        <div class="stepper">
+          <button onclick="changeFortressCount(-1)">−</button>
+          <span id="fortress-count-display">2</span>
+          <button onclick="changeFortressCount(1)">+</button>
+        </div>
+      </div>
+
+      <div class="field-group" id="fortress-field">
+        <label>Fortress Levels</label>
+        <div class="level-inputs" id="fortress-inputs"></div>
+      </div>
+
+      <div class="field-group">
+        <label>Available Materials</label>
+        <input type="number" class="single" id="materials" value="1000000" min="0" placeholder="e.g. 1000000">
+      </div>
+
+      <div class="field-group">
+        <label>Discount Rate (Green Tree, e.g. 0.1 = 10%)</label>
+        <input type="number" class="single" id="discount" value="0" min="0" max="1" step="0.01" placeholder="0.0">
+      </div>
+
+      <button class="btn-calc" onclick="calculate()">▶ Calculate Optimal Upgrades</button>
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <!-- OUTPUT PANEL -->
+    <div class="panel" id="output-panel">
+      <h2>Results</h2>
+      <div id="results-container">
+        <div class="empty-state">
+          <div class="big-icon">🏰</div>
+          <p>Configure your buildings and hit Calculate to see the optimal upgrade order.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---- Data ----
+  const MATERIALS = [0,685,2285,4113,7404,13328,23991,43185,77733,139921,251857,302229,362675,435210,522250,526700,752004,902450,1080000,1300000];
+  const HONORS    = [0,12770,17878,25029,35040,49057,68679,96151,134611,188456,263838,369374,443248,531898,638278,765933,919120,1102944,1323532,1588239,1905887];
+  const PROCESSING = [0,450,600,800,950,1000,1200,2000,2500,3000,4500,6000,8000,10000,11250,12500,13750,15000,17500,20000,22500];
+  const STORAGE    = [0,12500,20000,50000,70000,100000,140000,190000,270000,380000,520000,730000,880000,1050000,1260000,1510000,1810000,2180000,2610000,3130000,3750000];
+
+  let fortressCount = 2;
+
+  function changeFortressCount(delta) {
+    fortressCount = Math.max(0, Math.min(8, fortressCount + delta));
+    document.getElementById('fortress-count-display').textContent = fortressCount;
+    renderFortressInputs();
+  }
+
+  function renderFortressInputs() {
+    const container = document.getElementById('fortress-inputs');
+    const field = document.getElementById('fortress-field');
+    field.style.display = fortressCount === 0 ? 'none' : '';
+    container.innerHTML = '';
+    for (let i = 0; i < fortressCount; i++) {
+      const wrap = document.createElement('div');
+      wrap.style.flex = '1';
+      wrap.innerHTML = `<input type="number" class="fort-lvl" min="0" max="20" value="10" placeholder="0">
+        <div class="level-tag">Fort ${i+1}</div>`;
+      container.appendChild(wrap);
+    }
+  }
+
+  renderFortressInputs();
+
+  function fmt(n) { return n.toLocaleString(); }
+
+  function calculate() {
+    const errorEl = document.getElementById('error-msg');
+    errorEl.style.display = 'none';
+
+    const campInputs = [...document.querySelectorAll('.camp-lvl')].map(i => parseInt(i.value));
+    const fortInputs = [...document.querySelectorAll('.fort-lvl')].map(i => parseInt(i.value));
+    const materials  = parseInt(document.getElementById('materials').value);
+    const discount   = parseFloat(document.getElementById('discount').value) || 0;
+
+    // Validation
+    if (campInputs.some(v => isNaN(v) || v < 0 || v > 20)) {
+      showError('Camp levels must be between 0 and 20.'); return;
+    }
+    if (fortInputs.some(v => isNaN(v) || v < 0 || v > 20)) {
+      showError('Fortress levels must be between 0 and 20.'); return;
+    }
+    if (isNaN(materials) || materials < 0) {
+      showError('Please enter a valid amount of materials.'); return;
+    }
+    if (isNaN(discount) || discount < 0 || discount > 1) {
+      showError('Discount rate must be between 0 and 1.'); return;
+    }
+
+    const campLevels = [...campInputs];
+    const fortLevels = [...fortInputs];
+
+    const initialProc = campLevels.reduce((s,l) => s + PROCESSING[l], 0);
+    const initialStor = campLevels.reduce((s,l) => s + STORAGE[l], 0);
+
+    // Greedy algorithm
+    let remaining = materials;
+    let totalCost = 0;
+    let totalHonors = 0;
+    const scheme = [];
+
+    while (true) {
+      let bestUpgrade = null;
+      let bestEff = 0;
+
+      for (let i = 0; i < campLevels.length; i++) {
+        if (campLevels[i] < 20) {
+          const cost = Math.ceil(MATERIALS[campLevels[i]] * (1 - discount));
+          if (cost <= remaining) {
+            const honor = HONORS[campLevels[i]];
+            const eff = honor / cost;
+            if (eff > bestEff) { bestEff = eff; bestUpgrade = {i, type:'camp', cost, honor}; }
+          }
+        }
+      }
+
+      for (let i = 0; i < fortLevels.length; i++) {
+        if (fortLevels[i] < 20) {
+          const cost = Math.ceil(MATERIALS[fortLevels[i]] * 10 * (1 - discount));
+          if (cost <= remaining) {
+            const honor = HONORS[fortLevels[i]];
+            const eff = honor / cost;
+            if (eff > bestEff) { bestEff = eff; bestUpgrade = {i, type:'fortress', cost, honor}; }
+          }
+        }
+      }
+
+      if (!bestUpgrade) break;
+
+      const {i, type, cost, honor} = bestUpgrade;
+      let procGained = 0, storGained = 0;
+
+      if (type === 'camp') {
+        campLevels[i]++;
+        const nl = campLevels[i];
+        procGained = PROCESSING[nl] - PROCESSING[nl-1];
+        storGained = STORAGE[nl] - STORAGE[nl-1];
+      } else {
+        fortLevels[i]++;
+      }
+
+      remaining -= cost;
+      totalCost += cost;
+      totalHonors += honor;
+
+      const curProc = campLevels.reduce((s,l) => s + PROCESSING[l], 0);
+      const curStor = campLevels.reduce((s,l) => s + STORAGE[l], 0);
+
+      scheme.push({
+        step: scheme.length + 1,
+        type, index: i, cost, totalCost, honor, totalHonors,
+        campLevels: [...campLevels], fortLevels: [...fortLevels],
+        procGained, storGained, curProc, curStor, eff: honor / cost
+      });
+    }
+
+    renderResults(scheme, totalHonors, remaining, initialProc, initialStor,
+                  campLevels, fortLevels, campInputs, fortInputs);
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function renderResults(scheme, totalHonors, remaining, initProc, initStor,
+                         finalCamps, finalForts, initCamps, initForts) {
+    const container = document.getElementById('results-container');
+
+    if (scheme.length === 0) {
+      container.innerHTML = `<div class="empty-state"><div class="big-icon">💸</div>
+        <p>Not enough materials for any upgrade, or all buildings are already at max level.</p></div>`;
+      return;
+    }
+
+    const finalProc = finalCamps.reduce((s,l) => s + PROCESSING[l], 0);
+    const finalStor = finalCamps.reduce((s,l) => s + STORAGE[l], 0);
+    const maxEff = Math.max(...scheme.map(s => s.eff));
+
+    const campCount = scheme.filter(s => s.type === 'camp').length;
+    const fortCount = scheme.filter(s => s.type === 'fortress').length;
+
+    container.innerHTML = `
+      <div class="fade-in">
+        <div class="summary-cards">
+          <div class="stat-card"><div class="stat-label">Total Honors</div><div class="stat-value">${fmt(totalHonors)}</div></div>
+          <div class="stat-card accent"><div class="stat-label">Upgrades Done</div><div class="stat-value">${scheme.length} <span style="font-size:0.75rem;color:var(--muted)">(${campCount}C / ${fortCount}F)</span></div></div>
+          <div class="stat-card green"><div class="stat-label">Remaining Materials</div><div class="stat-value">${fmt(remaining)}</div></div>
+          <div class="stat-card orange"><div class="stat-label">Materials Spent</div><div class="stat-value">${fmt(scheme[scheme.length-1].totalCost)}</div></div>
+        </div>
+
+        <div class="summary-cards">
+          <div class="stat-card"><div class="stat-label">Init Processing</div><div class="stat-value">${fmt(initProc)}</div></div>
+          <div class="stat-card accent"><div class="stat-label">Final Processing</div><div class="stat-value">${fmt(finalProc)} <span style="font-size:0.7rem;color:var(--green)">+${fmt(finalProc-initProc)}</span></div></div>
+          <div class="stat-card"><div class="stat-label">Init Storage</div><div class="stat-value">${fmt(initStor)}</div></div>
+          <div class="stat-card green"><div class="stat-label">Final Storage</div><div class="stat-value">${fmt(finalStor)} <span style="font-size:0.7rem;color:var(--green)">+${fmt(finalStor-initStor)}</span></div></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th class="center">Type</th>
+                <th>Cost</th>
+                <th>Total Cost</th>
+                <th>Honors</th>
+                <th>Total Honors</th>
+                <th>Efficiency</th>
+                <th>+Proc</th>
+                <th>Processing</th>
+                <th>+Stor</th>
+                <th>Storage</th>
+                <th>Camps</th>
+                <th>Forts</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${scheme.map(s => {
+                const effClass = s.eff >= maxEff * 0.8 ? 'eff-high' : s.eff >= maxEff * 0.4 ? 'eff-mid' : 'eff-low';
+                const badge = s.type === 'camp'
+                  ? `<span class="badge badge-camp">Camp ${s.index+1}</span>`
+                  : `<span class="badge badge-fort">Fort ${s.index+1}</span>`;
+                const procStr = s.type === 'camp' ? `+${fmt(s.procGained)}` : '—';
+                const storStr = s.type === 'camp' ? `+${fmt(s.storGained)}` : '—';
+
+                const campChips = s.campLevels.map((l,i)=>`<span class="level-chip">${l}</span>`).join('');
+                const fortChips = s.fortLevels.length
+                  ? s.fortLevels.map((l,i)=>`<span class="level-chip fort">${l}</span>`).join('')
+                  : '—';
+
+                return `<tr>
+                  <td style="color:var(--muted)">${s.step}</td>
+                  <td class="center">${badge}</td>
+                  <td>${fmt(s.cost)}</td>
+                  <td style="color:var(--muted)">${fmt(s.totalCost)}</td>
+                  <td style="color:var(--gold)">${fmt(s.honor)}</td>
+                  <td style="color:var(--gold)">${fmt(s.totalHonors)}</td>
+                  <td class="${effClass}">${s.eff.toFixed(3)}</td>
+                  <td style="color:var(--green)">${procStr}</td>
+                  <td>${fmt(s.curProc)}</td>
+                  <td style="color:var(--accent2)">${storStr}</td>
+                  <td>${fmt(s.curStor)}</td>
+                  <td><div class="levels-mini">${campChips}</div></td>
+                  <td><div class="levels-mini">${fortChips}</div></td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+        <p class="scroll-hint">← scroll horizontally if needed →</p>
+      </div>
+    `;
+  }
+</script>
+</body>
+</html>
